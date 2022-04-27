@@ -1,7 +1,7 @@
 const Meeting = require("../models/Meeting");
 const { findById } = require("../models/User");
 const User = require("../models/User");
-
+require("express-async-errors");
 exports.getUsers=async(req ,res)=>{
 
 const users = await User.find() ;
@@ -46,8 +46,8 @@ exports.ScheduleMeeting =async(req ,res)=>{
 
     const {title ,  scheduler , member  ,  DateandTime}= req.body ; 
 
-    const  meetingMember  =  await User.findById(member)  ; 
-const meetingScheduler =  await User.findById(scheduler);
+    const  meetingMember  =  await User.findById(member).populate("meetings")  ; 
+const meetingScheduler =  await User.findById(scheduler).populate("meetings") ;
     if(!meetingMember){
         const error =  new Error("member not found");
         error.statusCode =  403 ;
@@ -56,13 +56,26 @@ const meetingScheduler =  await User.findById(scheduler);
 
     console.log(meetingMember);
  
-    const date =  Date.now();
+    const date =  new Date(DateandTime);
+
+    const memberNotFree =  meetingMember.meetings.find(meeting=>{
+        const DateandTime = new Date(meeting.DateandTime);
+        return date.getTime() === DateandTime.getTime() ; 
+
+    })
+ console.log(memberNotFree,22);
+    if(memberNotFree){
+        const error =  new Error("Member is not free");
+        error.statusCode =403 ;
+        throw error;
+    }
     const meeting  =  new Meeting({
         title , scheduler , member , DateandTime:date
-    }) 
+    }) ;
+
     
     await meeting.save();
-    console.log(meetingMember);
+
  meetingMember.meetings.push(meeting);
  meetingScheduler.meetings.push(meeting);
 
@@ -76,3 +89,22 @@ res.status(201).send(meeting);
 
 
 }
+
+
+exports.getMeeting= async(req ,res)=>{
+
+    const meeting =  await Meeting.findById(req.params.id).populate("member").populate("scheduler");
+    
+    console.log(meeting);
+
+    if(!meeting){
+        const error =  new Error("meeting not found");
+        error.statusCode =404 ;
+        throw error;
+    }
+
+
+    res.status(200).send(meeting);
+
+
+} ;

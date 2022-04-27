@@ -1,6 +1,6 @@
 const express =  require("express");
 const {body} =  require("express-validator");
-const { createUser , getUsers ,getUser  , ScheduleMeeting} = require("../controller");
+const { createUser , getUsers ,getUser  , ScheduleMeeting, getMeeting} = require("../controller");
 const User= require("../models/User");
 const {reqValidator}  =  require("../middlewares/reqValidation");
 const router = express.Router();
@@ -27,7 +27,7 @@ router.route("/meeting")
 .post(ScheduleMeeting);
 
 router.route("/meeting/:id")
-.get();
+.get(getMeeting);
 
 
 module.exports=  router ;
