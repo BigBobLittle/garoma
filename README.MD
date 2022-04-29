@@ -1,11 +1,12 @@
 #####
 
-**Create  User**
+## Create User
 
 Creates a user with the details and returns the user info
 
-|Body|values|description|unique|
-| |username:string| input user's username here|yes|
+|Body     |values    |description  |unique|
+| ------- | -------- | ----------- | ---- |
+|         |username:string| input user's username here|yes|
 
 example URL : **http://localhost:8080/user**
 method:Post
