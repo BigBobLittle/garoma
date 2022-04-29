@@ -9,7 +9,7 @@ router.use(express.json());
 
 router.route("/user")
 .get(getUsers) 
-.post([body("username" , ).notEmpty().trim().custom((value ,{req})=>{
+.post([body("username").notEmpty().trim().custom((value ,{req})=>{
     return User.findOne({username:value}).then(user=>{
         console.log(user);
         if(user){

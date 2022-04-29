@@ -1,5 +1,5 @@
 const Meeting = require("../models/Meeting");
-const { findById } = require("../models/User");
+
 const User = require("../models/User");
 require("express-async-errors");
 exports.getUsers=async(req ,res)=>{
