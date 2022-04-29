@@ -38,7 +38,7 @@ create meeting with user details and meeting details
 |Body|values|description|unique|required|
 |----|------|-----------|------|--------|
 | |title:string| meeting title|no|yes|
-| |scheduler:string|id of user creating the email|no|yes|
+| |scheduler:string|id of user creating the meeting|no|yes|
 | |member:string|id of user invited to meeting|no|yes|
 | |DateandTime:string| date and time for meeting|no|yes|
 
