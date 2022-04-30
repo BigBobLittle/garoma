@@ -2,7 +2,7 @@
   "name": "intern-task",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "jest --watchAll --no-cache",
     "start": "nodemon src/server.js" 

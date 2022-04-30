@@ -1,0 +1,9 @@
+GET http://localhost:8080/user
+
+### 
+POST http://localhost:8080/createUser 
+Content-Type: application/json
+
+{
+    "username": "test-user"
+}

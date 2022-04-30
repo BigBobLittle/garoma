@@ -12,8 +12,8 @@ const start = async()=>{
             }
 
             
-        const connect = await mongoose.connect("mongodb://localhost:27017/Meetings");
-        console.log(connect.connection.host);
+        const connect = await mongoose.connect(process.env.MONGO_URI);
+        // console.log(connect.connection.host);
     }catch(err){
         console.log(err);
     }
