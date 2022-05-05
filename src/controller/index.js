@@ -3,108 +3,89 @@ const Meeting = require("../models/Meeting");
 const User = require("../models/User");
 require("express-async-errors");
 
+exports.getUsers = async (req, res) => {
+  const users = await User.find();
 
-exports.getUsers=async(req ,res)=>{
-
-const users = await User.find() ;
-
-
-res.status(200).send(users);
-
-
+  res.status(200).send(users);
 };
 
+exports.createUser = async (req, res) => {
+  const { username } = req.body;
 
-exports.createUser =async (req ,res)=>{
-
-    const {username} =  req.body;
-
-    const user = new User({
-        username ,
-        meetings:[]
-    });
-await user.save();
-    res.status(201).send(user);
-
-
+  const user = new User({
+    username,
+    meetings: [],
+  });
+  await user.save();
+  res.status(201).send(user);
 };
 
+exports.getUser = async (req, res) => {
+  const user = await User.findById(req.params.id).populate("meetings");
 
-exports.getUser = async(req ,res)=>{
+  if (!user) {
+    const error = new Error("User not found");
+    error.statusCode = 403;
+    throw error;
+  }
 
-    const user =  await User.findById(req.params.id).populate("meetings");
+  res.status(200).send(user);
+};
 
-    if(!user){
-        const error =  new Error("User not found");
-        error.statusCode =  403 ;
-        throw error ;
-    }
+exports.ScheduleMeeting = async (req, res) => {
+  const { title, scheduler, member, DateandTime } = req.body;
+  const meetingMember = await User.findById(member).populate("meetings");
+  const meetingScheduler = await User.findById(scheduler).populate("meetings");
+  if (!meetingMember) {
+    const error = new Error("member not found");
+    error.statusCode = 403;
+    throw error;
+  }
 
-    res.status(200).send(user);
-}
+  console.log(meetingMember);
 
-exports.ScheduleMeeting =async(req ,res)=>{
+  const date = new Date(DateandTime);
 
-    const {title ,  scheduler , member  ,  DateandTime}= req.body ; 
-    const  meetingMember  =  await User.findById(member).populate("meetings")  ; 
-const meetingScheduler =  await User.findById(scheduler).populate("meetings") ;
-    if(!meetingMember){
-        const error =  new Error("member not found");
-        error.statusCode =  403 ;
-        throw error ;
-    }
+  const memberNotFree = meetingMember.meetings.find((meeting) => {
+    const DateandTime = new Date(meeting.DateandTime);
+    return date.getTime() === DateandTime.getTime();
+  });
+  console.log(memberNotFree, 22);
+  if (memberNotFree) {
+    const error = new Error("Member is not free");
+    error.statusCode = 403;
+    throw error;
+  }
+  const meeting = new Meeting({
+    title,
+    scheduler,
+    member,
+    DateandTime: date,
+  });
 
-    console.log(meetingMember);
- 
-    const date =  new Date(DateandTime);
+  await meeting.save();
 
-    const memberNotFree =  meetingMember.meetings.find(meeting=>{
-        const DateandTime = new Date(meeting.DateandTime);
-        return date.getTime() === DateandTime.getTime() ; 
+  meetingMember.meetings.push(meeting);
+  meetingScheduler.meetings.push(meeting);
 
-    })
- console.log(memberNotFree,22);
-    if(memberNotFree){
-        const error =  new Error("Member is not free");
-        error.statusCode =403 ;
-        throw error;
-    }
-    const meeting  =  new Meeting({
-        title , scheduler , member , DateandTime:date
-    }) ;
+  await meetingMember.save();
+  await meetingScheduler.save();
 
-    
-    await meeting.save();
+  res.status(201).send(meeting);
+};
 
- meetingMember.meetings.push(meeting);
- meetingScheduler.meetings.push(meeting);
+exports.getMeeting = async (req, res) => {
+  const meeting = await Meeting.findById(req.params.id)
+    .populate("member")
+    .populate("scheduler");
 
- await meetingMember.save();
- await meetingScheduler.save();
+  console.log(meeting);
 
+  if (!meeting) {
+    const error = new Error("meeting not found");
+    error.statusCode = 404;
+    throw error;
+  }
 
-
-res.status(201).send(meeting);
-
-
-
-}
-
-
-exports.getMeeting= async(req ,res)=>{
-
-    const meeting =  await Meeting.findById(req.params.id).populate("member").populate("scheduler");
-    
-    console.log(meeting);
-
-    if(!meeting){
-        const error =  new Error("meeting not found");
-        error.statusCode =404 ;
-        throw error;
-    }
-
-
-    res.status(200).send(meeting);
-
-
-} ;
+  res.status(200).send(meeting);
+};

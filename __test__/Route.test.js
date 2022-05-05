@@ -1,4 +1,4 @@
-const app  =  require("../../app");
+const app  =  require("../src/app");
 const request =  require("supertest");
 
 it("should return a 200" , async()=>{
