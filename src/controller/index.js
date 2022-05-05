@@ -2,6 +2,8 @@ const Meeting = require("../models/Meeting");
 const { findById } = require("../models/User");
 const User = require("../models/User");
 require("express-async-errors");
+
+
 exports.getUsers=async(req ,res)=>{
 
 const users = await User.find() ;
@@ -30,7 +32,6 @@ await user.save();
 
 exports.getUser = async(req ,res)=>{
 
-   
     const user =  await User.findById(req.params.id).populate("meetings");
 
     if(!user){
@@ -45,7 +46,6 @@ exports.getUser = async(req ,res)=>{
 exports.ScheduleMeeting =async(req ,res)=>{
 
     const {title ,  scheduler , member  ,  DateandTime}= req.body ; 
-
     const  meetingMember  =  await User.findById(member).populate("meetings")  ; 
 const meetingScheduler =  await User.findById(scheduler).populate("meetings") ;
     if(!meetingMember){
